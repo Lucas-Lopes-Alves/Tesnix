@@ -1,0 +1,12 @@
+# folders
+.vscode/
+iso/
+isos/
+bin/
+
+# files
+*.iso
+*.bin
+*.json
+*.elf
+*.o
