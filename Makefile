@@ -2,8 +2,8 @@ CAMINHO?=isos/teste.iso
 ISO?=teste
 
 build32:
-	i686-elf-gcc -m32 -ffreestanding -nostdlib -c kernel.c -o bin/kernel.o
-	i686-elf-ld -m elf_i386 -T kernel.ld bin/kernel.o -o iso/boot/kernel.elf
+	i686-elf-gcc -ffreestanding -nostdlib -c kernel.c -o bin/kernel.o
+	i686-elf-ld -T kernel.ld bin/kernel.o -o iso/boot/kernel.elf
 	grub-mkrescue iso -o isos/$(ISO).iso
 
 emulate:
