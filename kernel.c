@@ -8,18 +8,14 @@ const unsigned int header[] = {
 void main(void) {
     volatile char* video = (volatile char*)0xb8000;
 
-    video[0] = 'B';
-    video[1] = 0x07;
-    video[2] = 'a';
-    video[3] = 0x07;
-    video[4] = 't';
-    video[5] = 0x07;
-    video[6] = 'a';
-    video[7] = 0x07;
-    video[8] = 't';
-    video[9] = 0x07;
-    video[10] = 'a';
-    video[11] = 0x07;
+    char palavra[] = "batata";
+    int tamanho = sizeof(palavra)/sizeof(palavra[0]);
+
+    for (int i = 0; i < tamanho; i++)
+    {
+        video[i*2] = palavra[i];
+        video[i*2+1] = 0x07;
+    }
 
     while(1);
 }
