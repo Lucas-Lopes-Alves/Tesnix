@@ -1,14 +1,7 @@
-__attribute__((section(".multiboot"), aligned(4)))
-const unsigned int header[] = {
-    0x1BADB002,
-    0x0,
-    -(0x1BADB002)
-};
-
 void main(void) {
     volatile char* video = (volatile char*)0xb8000;
 
-    char palavra[] = "batata";
+    char palavra[] = "pneumoultramicroscopicossilicovulcanoconiótico";
     int tamanho = sizeof(palavra)/sizeof(palavra[0]);
 
     for (int i = 0; i < tamanho; i++)
