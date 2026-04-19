@@ -96,7 +96,7 @@ void terminal_scroll()
             terminal_buffer[j] = ' ';
         }
     }
-    terminal_row -= 1;
+    terminal_row = VGA_WIDTH - 1;
 }
 // function that writes in the screen and go to the next line
 // when find the '\n' character
