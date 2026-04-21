@@ -80,27 +80,51 @@ void terminal_setcolor(uint8_t color)
     terminal_color = color;
 }
 
-// scrolls the terminal up by taking each line one line up and
-// cleaning the last line
+// scroll the terminal up by taking each line and
+// moving one line up and cleaning the last line
 void terminal_scroll()
 {
-    for(size_t i = 1; i < VGA_HEIGHT; i++)
+    for (size_t i = 1; i < VGA_HEIGHT; i++)
     {
-        for (size_t j = 0; j < VGA_WIDTH;j++)
+        for (size_t j = 0; j < VGA_WIDTH; j++)
         {
-            int value = (i-1)*VGA_WIDTH+j;
-            int position = i*VGA_WIDTH+j;
+            int value = (i - 1) * VGA_WIDTH + j;
+            int position = i * VGA_WIDTH + j;
             terminal_buffer[value] = terminal_buffer[position];
-        
         }
     }
 
-    size_t line = (VGA_HEIGHT-1) * VGA_WIDTH;
+    size_t line = (VGA_HEIGHT - 1) * VGA_WIDTH;
     for (size_t k = 0; k < VGA_WIDTH; k++)
     {
-        terminal_buffer[k+line] = vga_entry(' ',vga_entry_color(VGA_COLOR_LIGHT_GREY,VGA_COLOR_BLACK));
+        terminal_buffer[k + line] = vga_entry(' ', vga_entry_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK));
     }
-    terminal_row = VGA_HEIGHT-1;
+    terminal_row = VGA_HEIGHT - 1;
+}
+
+void vga_putchar(char c, size_t size)
+{
+    if (terminal_row >= VGA_HEIGHT)
+    {
+        terminal_scroll();
+    }
+    if (c == '\n')
+    {
+        terminal_row++;
+        terminal_column = 0;
+
+        if (terminal_row == VGA_HEIGHT)
+            terminal_scroll();
+        return;
+    }
+    size_t index = terminal_row * VGA_WIDTH + terminal_column;
+    terminal_buffer[index] = vga_entry(c,terminal_color);
+    terminal_column++;
+    if (terminal_column == VGA_WIDTH)
+    {
+        terminal_row++;
+        terminal_column = 0;
+    }
 }
 
 // function that writes in the screen and go to the next line
@@ -108,45 +132,25 @@ void terminal_scroll()
 // it scrolls the terminal up by invocating the terminal_scroll function
 void vga_write(const char *info, size_t size)
 {
-    if (terminal_row >= VGA_HEIGHT)
-    {
-        terminal_scroll();
-    }
     for (size_t i = 0; i < size; i++)
     {
-
-        if (info[i] == '\n')
-        {
-            terminal_row++;
-            terminal_column = 0;
-
-            if (terminal_row == VGA_HEIGHT)
-                terminal_scroll();
-
-            continue;
-        }
-
-        size_t index = terminal_row * VGA_WIDTH + terminal_column;
-        terminal_buffer[index] = vga_entry(info[i], terminal_color);
-        terminal_column++;
-        if (terminal_column == VGA_WIDTH)
-        {
-            terminal_column = 0;
-            terminal_row++;
-        }
+        vga_putchar(info[i],size);
     }
 }
 
-void vga_writestring(const char* string)
+void vga_writestring(const char *string)
 {
-    vga_write(string,strlen(string));
+    vga_write(string, strlen(string));
 }
 
 void kernel_main(void)
 {
     terminal_initialize();
-    
-    vga_writestring("Hello World Kernel!?!?!?!?!!?!?!?!?");
 
-    while (1);
+    for (int i = 0; i< 25;i++)
+    {
+        vga_writestring("Hello kernel world\n");
+    }
+    while (1)
+        ;
 }
