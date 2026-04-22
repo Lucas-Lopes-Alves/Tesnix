@@ -35,23 +35,24 @@ static inline uint16_t vga_entry(unsigned char c, uint8_t color)
     return (uint16_t)c | (uint16_t)(color << 8);
 }
 
-// macros for vga width and height and the memory
-// where we write the text
+// VGA_MEMORY is the phisical adress to the
+// the vga buffer memory
 #define VGA_WIDTH 80
 #define VGA_HEIGHT 25
 #define VGA_MEMORY 0xB8000
 
-// global variables that determines the rows, columns, the terminal color and
-// a pointer to the adress to the vga video memory
+// The terminal_buffer is volatile to prevent some otimizations
+// that can slow down the acess to the vga memory
 size_t terminal_row = 0;
 size_t terminal_column = 0;
 uint8_t terminal_color;
 volatile uint16_t *terminal_buffer = (volatile uint16_t *)VGA_MEMORY;
 
-// function to initialize the terminal with no characters
+// it's two loops to acess all the adresses in the buffer
+// and clean them, it acess like a matrix using rows and columns
+// but translates it to 1D and saves in the index variable
 void terminal_initialize(void)
 {
-
     terminal_color = vga_entry_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
     uint16_t caractere = vga_entry(' ', terminal_color);
     for (size_t i = 0; i < VGA_HEIGHT; i++)
@@ -64,7 +65,6 @@ void terminal_initialize(void)
     }
 }
 
-// function that returns the size of a string
 size_t strlen(const char *str)
 {
     size_t size = 0;
@@ -80,8 +80,8 @@ void terminal_setcolor(uint8_t color)
     terminal_color = color;
 }
 
-// scroll the terminal up by taking each line and
-// moving one line up and cleaning the last line
+// scroll the terminal up by moving each line and
+// cleaning the last lines
 void terminal_scroll()
 {
     for (size_t i = 1; i < VGA_HEIGHT; i++)
@@ -102,6 +102,14 @@ void terminal_scroll()
     terminal_row = VGA_HEIGHT - 1;
 }
 
+/*
+    Writes a single character to the vga buffer
+
+    Handles:
+        The '\n' character to jump to a new line
+        If the line is the last it Triggers the Scrolls
+        If the column is the last, it goes to a new line and the start of a new line
+*/
 void vga_putchar(char c, size_t size)
 {
     if (terminal_row >= VGA_HEIGHT)
@@ -138,6 +146,7 @@ void vga_write(const char *info, size_t size)
     }
 }
 
+// Invokes the vga_write and handles the string's lenght
 void vga_writestring(const char *string)
 {
     vga_write(string, strlen(string));
