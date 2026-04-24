@@ -65,7 +65,7 @@ void terminal_initialize(void)
     }
 }
 
-size_t strlen(const char *str)
+size_t kstrlen(const char *str)
 {
     size_t size = 0;
     while (str[size])
@@ -97,7 +97,7 @@ void terminal_scroll()
     size_t line = (VGA_HEIGHT - 1) * VGA_WIDTH;
     for (size_t k = 0; k < VGA_WIDTH; k++)
     {
-        terminal_buffer[k + line] = vga_entry(' ', vga_entry_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK));
+        terminal_buffer[k + line] = vga_entry(' ', terminal_color);
     }
     terminal_row = VGA_HEIGHT - 1;
 }
@@ -110,7 +110,7 @@ void terminal_scroll()
  *      If the line is the last it Triggers the Scrolls
  *      If the column is the last, it goes to a new line and the start of a new line
  */
-void vga_putchar(char c, size_t size)
+void vga_putchar(char c)
 {
     if (terminal_row >= VGA_HEIGHT)
     {
@@ -142,12 +142,12 @@ void vga_write(const char *info, size_t size)
 {
     for (size_t i = 0; i < size; i++)
     {
-        vga_putchar(info[i],size);
+        vga_putchar(info[i]);
     }
 }
 
 // Invokes the vga_write and handles the string's lenght
 void vga_writestring(const char *string)
 {
-    vga_write(string, strlen(string));
+    vga_write(string, kstrlen(string));
 }
