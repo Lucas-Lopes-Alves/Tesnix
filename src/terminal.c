@@ -1,4 +1,6 @@
-#include "terminal.h"
+#include <stdbool.h>
+#include <stdint.h>
+#include <stddef.h>
 
 // list all the possible colors in vga mode
 enum vga_color

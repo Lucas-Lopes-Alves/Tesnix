@@ -1,3 +1,6 @@
+#ifndef VGA_TERMINAL
+#define VGA_TERMINAL
+
 #include <stdbool.h>
 #include <stdint.h>
 #include <stddef.h>
@@ -8,3 +11,5 @@ void terminal_scroll();
 void vga_putchar(char c, size_t size);
 void vga_write(const char *info, size_t size);
 void vga_writestring(const char *string);
+
+#endif

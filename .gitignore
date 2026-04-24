@@ -3,6 +3,7 @@
 iso/
 isos/
 bin/
+debug/
 
 # files
 *.iso

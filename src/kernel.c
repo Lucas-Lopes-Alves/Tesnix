@@ -1,4 +1,4 @@
-#include "terminal.h"
+#include "include/terminal.h"
 
 void kernel_main(void)
 {
