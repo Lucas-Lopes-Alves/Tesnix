@@ -3,7 +3,6 @@ CC=i686-elf-gcc
 AS = i686-elf-as
 CFLAGS= -ffreestanding -nostdlib -Iinclude
 LDFLAGS= -ffreestanding -nostdlib -lgcc
-STRUCTURE=$(shell mkdir -p bin debug/iso/boot/grub debugBin include iso/boot/grub isos obj src)
 # Saves all the files ending with .c to
 # change them from .c to .o
 SRCS_C := $(wildcard src/*.c)
@@ -12,6 +11,9 @@ OBJS := $(patsubst src/%.c, obj/%.o, $(SRCS_C))
 OBJS += $(patsubst src/%.s, obj/%.o, $(SRCS_S))
 DOBJS := $(patsubst src/%.c, debugBin/D%.o, $(SRCS_C))
 DOBJS += $(patsubst src/%.s, debugBin/D%.o, $(SRCS_S))
+
+# Checks if the folders exists to create them if not and don't create if exists
+$(shell mkdir -p bin debug/iso/boot/grub debugBin include iso/boot/grub isos obj src)
 
 .PHONY: debug clean all build emulate iso
 
