@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-char* keyboard_scancode(uint8_t key, char* out);
-char* keyboard_char(const char* scancode, char* out);
+void keyboard_scancode(uint8_t key, char* out);
+const char keyboard_char(uint8_t scancode);
 
 #endif
