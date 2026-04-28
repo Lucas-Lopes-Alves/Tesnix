@@ -1,5 +1,6 @@
 #include <io.h>
 #include <stdint.h>
+#include <stdbool.h>
 
 void keyboard_scancode(uint8_t port, char* out)
 {
@@ -9,10 +10,21 @@ void keyboard_scancode(uint8_t port, char* out)
     out[1] = digits[key & 0xF];
     out[2] = '\0';
 }
-
+bool shift=false;
 const char keyboard_char(uint8_t scancode)
 {
-    const char chars[] = {
+    if (scancode == 0x2A || scancode == 0x36)
+    {
+        if (shift)
+        {
+            shift = false;
+        }
+        else
+        {
+            shift = true;
+        }
+    }
+    const char charsalt[] = {
         [0x01]= 27,
         [0x02]='1',
         [0x03]='2',
@@ -65,8 +77,7 @@ const char keyboard_char(uint8_t scancode)
         [0x34]='.',
         [0x39]=' '
     };
-
-    const char CHARS[] = {
+    const char chars[] = {
         [0x01]= 27,
         [0x02]='1',
         [0x03]='2',
@@ -119,5 +130,10 @@ const char keyboard_char(uint8_t scancode)
         [0x34]='.',
         [0x39]=' '
     };
-    return CHARS[scancode];
+    if (shift)
+    {
+        return charsalt[scancode];
+    } else {
+        return chars[scancode];
+    }
 }
