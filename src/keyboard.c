@@ -24,7 +24,7 @@ const char keyboard_char(uint8_t scancode)
             shift = true;
         }
     }
-    const char charsalt[] = {
+    const char charsM[] = {
         [0x01]= 27,
         [0x02]='1',
         [0x03]='2',
@@ -132,7 +132,7 @@ const char keyboard_char(uint8_t scancode)
     };
     if (shift)
     {
-        return charsalt[scancode];
+        return charsM[scancode];
     } else {
         return chars[scancode];
     }
