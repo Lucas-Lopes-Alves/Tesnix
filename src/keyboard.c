@@ -38,15 +38,19 @@ const char keyboard_char(uint8_t scancode)
     }
     if (scancode == 0x3A)
     {
-        ps2_write_wait();
-        outb(0x60, 0xED);
-        ps2_write_wait();
-        outb(0x60, 0x04);
         if (capslock)
         {
+            ps2_write_wait();
+            outb(0x60, 0xED);
+            ps2_write_wait();
+            outb(0x60, 0x00);
             capslock = false;
         } else
         {
+            ps2_write_wait();
+            outb(0x60, 0xED);
+            ps2_write_wait();
+            outb(0x60, 0x04);
             capslock = true;
         }
     }

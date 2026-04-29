@@ -125,6 +125,22 @@ void vga_putchar(char c)
             terminal_scroll();
         return;
     }
+    if (c == '\b')
+    {
+        terminal_column = terminal_column - 1;
+        if (terminal_column - 1 > 80)
+        {
+            terminal_column = 80;
+            terminal_row -= 1;
+            if (terminal_row - 1 > 24)
+            {
+                terminal_row = 0;
+            }
+        }
+        size_t index = terminal_row * VGA_WIDTH + terminal_column;
+        terminal_buffer[index] = vga_entry(' ', terminal_color);
+        return;
+    }
     size_t index = terminal_row * VGA_WIDTH + terminal_column;
     terminal_buffer[index] = vga_entry(c,terminal_color);
     terminal_column++;
