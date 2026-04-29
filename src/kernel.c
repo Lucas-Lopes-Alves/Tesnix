@@ -22,6 +22,6 @@ void kernel_main(void)
         // char str[3];
         // keyboard_scancode(0x60,str);
         // vga_writestring(str);
-        // vga_writestring('\n');
+        // vga_writestring("\n");
     }
 }

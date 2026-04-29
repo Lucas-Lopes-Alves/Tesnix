@@ -2,6 +2,16 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+void ps2_write_wait()
+{
+    while(inb(0x64) & 0x02);
+}
+
+void ps2_read_wait()
+{
+    while(!(inb(0x64)&0x01));
+}
+
 void keyboard_scancode(uint8_t port, char* out)
 {
     uint8_t key = inb(port);
@@ -10,7 +20,9 @@ void keyboard_scancode(uint8_t port, char* out)
     out[1] = digits[key & 0xF];
     out[2] = '\0';
 }
+
 bool shift=false;
+bool capslock = false;
 const char keyboard_char(uint8_t scancode)
 {
     if (scancode == 0x2A || scancode == 0x36)
@@ -24,20 +36,34 @@ const char keyboard_char(uint8_t scancode)
             shift = true;
         }
     }
-    const char charsM[] = {
+    if (scancode == 0x3A)
+    {
+        ps2_write_wait();
+        outb(0x60, 0xED);
+        ps2_write_wait();
+        outb(0x60, 0x04);
+        if (capslock)
+        {
+            capslock = false;
+        } else
+        {
+            capslock = true;
+        }
+    }
+    const char charsAlt[] = {
         [0x01]= 27,
-        [0x02]='1',
-        [0x03]='2',
-        [0x04]='3',
-        [0x05]='4',
-        [0x06]='5',
-        [0x07]='6',
-        [0x08]='7',
-        [0x09]='8',
-        [0x0A]='9',
-        [0x0B]='0',
-        [0x0C]='-',
-        [0x0D]='=',
+        [0x02]='!',
+        [0x03]='@',
+        [0x04]='#',
+        [0x05]='$',
+        [0x06]='%',
+        [0x07]=':',
+        [0x08]='&',
+        [0x09]='*',
+        [0x0A]='(',
+        [0x0B]=')',
+        [0x0C]='_',
+        [0x0D]='+',
         [0x0E]='\b',
         [0x0F]='\t',
         [0x10]='Q',
@@ -51,7 +77,7 @@ const char keyboard_char(uint8_t scancode)
         [0x18]='O',
         [0x19]='P',
         [0x1A]='`',
-        [0x1B]='[',
+        [0x1B]='{',
         [0x1C]='\n',
         [0x3A]= 0 ,
         [0x1E]='A',
@@ -64,8 +90,9 @@ const char keyboard_char(uint8_t scancode)
         [0x25]='K',
         [0x26]='L',
         [0x27]=';',
-        [0x28]='~',
-        [0x2B]=']',
+        [0x28]='^',
+        [0x2B]='}',
+        [0x56]='|',
         [0x2C]='Z',
         [0x2D]='X',
         [0x2E]='C', 
@@ -73,9 +100,10 @@ const char keyboard_char(uint8_t scancode)
         [0x30]='B',
         [0x31]='N',
         [0x32]='M',
-        [0x33]=',',
-        [0x34]='.',
-        [0x39]=' '
+        [0x33]='<',
+        [0x34]='>',
+        [0x39]=' ',
+        [0x73]='?' 
     };
     const char chars[] = {
         [0x01]= 27,
@@ -119,6 +147,7 @@ const char keyboard_char(uint8_t scancode)
         [0x27]=';',
         [0x28]='~',
         [0x2B]=']',
+        [0x56]='\\',
         [0x2C]='z',
         [0x2D]='x',
         [0x2E]='c', 
@@ -128,11 +157,12 @@ const char keyboard_char(uint8_t scancode)
         [0x32]='m',
         [0x33]=',',
         [0x34]='.',
-        [0x39]=' '
+        [0x39]=' ',
+        [0x73]='/'
     };
-    if (shift)
+    if (capslock)
     {
-        return charsM[scancode];
+        return charsAlt[scancode];
     } else {
         return chars[scancode];
     }
