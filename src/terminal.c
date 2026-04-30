@@ -128,17 +128,28 @@ void vga_putchar(char c)
     if (c == '\b')
     {
         terminal_column = terminal_column - 1;
-        if (terminal_column - 1 > 80)
+        if (terminal_column > 80)
         {
             terminal_column = 80;
             terminal_row -= 1;
-            if (terminal_row - 1 > 24)
+            if (terminal_row > 25)
             {
                 terminal_row = 0;
+                terminal_column = 0;
             }
         }
         size_t index = terminal_row * VGA_WIDTH + terminal_column;
         terminal_buffer[index] = vga_entry(' ', terminal_color);
+        return;
+    }
+    if (c == '\t')
+    {
+        size_t index = terminal_row * VGA_WIDTH + terminal_column;
+        for (size_t i = 0; i != 4; i++)
+        {
+            terminal_buffer[index] = vga_entry(' ', terminal_color);
+            terminal_column+=1;
+        }
         return;
     }
     size_t index = terminal_row * VGA_WIDTH + terminal_column;
