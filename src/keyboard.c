@@ -24,8 +24,17 @@ void keyboard_scancode(uint8_t port, char *out)
     out[2] = '\0';
 }
 
+typedef struct
+{
+    bool capslock;
+    bool scrollock;
+    bool numlock;
+}locks;
+
+locks kbd_state = {false,false,false};
+
 bool shift = false;
-bool capslock = false;
+
 const char keyboard_char(uint8_t scancode)
 {
     if (scancode == 0x2A || scancode == 0x36)
@@ -41,13 +50,13 @@ const char keyboard_char(uint8_t scancode)
     }
     if (scancode == 0x3A)
     {
-        if (capslock)
+        if (kbd_state.capslock)
         {
             ps2_write_wait();
             outb(0x60, 0xED);
             ps2_write_wait();
             outb(0x60, 0x00);
-            capslock = false;
+            kbd_state.capslock = false;
         }
         else
         {
@@ -55,7 +64,7 @@ const char keyboard_char(uint8_t scancode)
             outb(0x60, 0xED);
             ps2_write_wait();
             outb(0x60, 0x04);
-            capslock = true;
+            kbd_state.capslock = true;
         }
     }
     else if (scancode == 0x45)
@@ -63,7 +72,7 @@ const char keyboard_char(uint8_t scancode)
 
     }
     
-    if (capslock)
+    if (kbd_state.capslock)
     {
         return charsAlt[scancode];
     }
