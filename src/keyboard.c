@@ -1,4 +1,4 @@
-#include <io.h>
+#include "io.h"
 #include <stdint.h>
 #include <stdbool.h>
 #include "keymap.h"
@@ -24,7 +24,7 @@ void keyboard_scancode(uint8_t port, char *out)
     out[2] = '\0';
 }
 
-typedef struct
+typedef struct locks
 {
     bool capslock;
     bool scrollock;
@@ -35,49 +35,45 @@ locks kbd_state = {false,false,false};
 
 bool shift = false;
 
+const char* ptr = chars;
+
 const char keyboard_char(uint8_t scancode)
 {
     if (scancode == 0x2A || scancode == 0x36)
     {
-        if (shift)
-        {
-            shift = false;
-        }
-        else
-        {
-            shift = true;
-        }
+        shift = true;
+        return '\0';
     }
+
+    if (scancode == 0xAA || scancode== 0xB6)
+    {
+        shift = false;
+        return '\0';
+    }
+
     if (scancode == 0x3A)
     {
-        if (kbd_state.capslock)
-        {
-            ps2_write_wait();
-            outb(0x60, 0xED);
-            ps2_write_wait();
-            outb(0x60, 0x00);
-            kbd_state.capslock = false;
-        }
-        else
-        {
-            ps2_write_wait();
-            outb(0x60, 0xED);
-            ps2_write_wait();
-            outb(0x60, 0x04);
-            kbd_state.capslock = true;
-        }
+        kbd_state.capslock = !kbd_state.capslock;
+        ps2_write_wait();
+        outb(0x60, 0xED);
+        ps2_write_wait();
+        outb(0x60, kbd_state.capslock ? 0x00 : 0x04);
+        return '\0';
     }
-    else if (scancode == 0x45)
-    {
 
-    }
-    
-    if (kbd_state.capslock)
+    if (scancode & 0x80)
     {
-        return charsAlt[scancode];
+        return '\0';
+    }
+
+    if (kbd_state.capslock != shift)
+    {
+        ptr = charsAlt;
     }
     else
     {
-        return chars[scancode];
+        ptr = chars;
     }
+
+    return ptr[scancode];
 }

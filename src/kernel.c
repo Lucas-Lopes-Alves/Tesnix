@@ -10,13 +10,10 @@ void kernel_main(void)
         if (inb(0x64) & 0x01)
         {
             uint8_t code = inb(0x60);
-            if (code & 0x80)
-            {
-                continue;
-            }
             char str[2];
             str[0] = keyboard_char(code);
             str[1] = '\0';
+            if (str[0] == '\0') continue;
             vga_writestring(str);
         }
         // char str[3];

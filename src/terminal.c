@@ -147,8 +147,7 @@ void vga_putchar(char c)
         size_t index = terminal_row * VGA_WIDTH + terminal_column;
         for (size_t i = 0; i != 4; i++)
         {
-            terminal_buffer[index] = vga_entry(' ', terminal_color);
-            terminal_column+=1;
+            vga_putchar(' ');
         }
         return;
     }
