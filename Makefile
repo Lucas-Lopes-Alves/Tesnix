@@ -1,7 +1,7 @@
 PLACE?=isos/kernel.iso
 CC=i686-elf-gcc
 AS = i686-elf-as
-CFLAGS= -ffreestanding -nostdlib -Iinclude
+CFLAGS= -ffreestanding -Iinclude -O2 -Wall -Wextra
 LDFLAGS= -ffreestanding -nostdlib -lgcc
 # Saves all the files ending with .c to
 # change them from .c to .o
