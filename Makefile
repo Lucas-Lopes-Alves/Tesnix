@@ -1,14 +1,16 @@
 PLACE?=isos/kernel.iso
 CC=i686-elf-gcc
 AS = i686-elf-as
-CFLAGS= -ffreestanding -Iinclude -O2 -Wall -Wextra
+CFLAGS= -ffreestanding -Iinclude -O2 -Wall -Wextra -fno-stack-protector -fno-builtin -fno-pic -fno-pie
 LDFLAGS= -ffreestanding -nostdlib -lgcc
 # Saves all the files ending with .c to
 # change them from .c to .o
 SRCS_C := $(wildcard src/*.c)
 SRCS_S := $(wildcard src/*.s)
 OBJS := $(patsubst src/%.c, obj/%.o, $(SRCS_C))
+OBJS := $(patsubst src/%.c, obj/%.o, $(SRCS_C))
 OBJS += $(patsubst src/%.s, obj/%.o, $(SRCS_S))
+DOBJS := $(patsubst src/%.c, debugBin/D%.o, $(SRCS_C))
 DOBJS := $(patsubst src/%.c, debugBin/D%.o, $(SRCS_C))
 DOBJS += $(patsubst src/%.s, debugBin/D%.o, $(SRCS_S))
 
