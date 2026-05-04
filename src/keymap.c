@@ -2,6 +2,7 @@
 
 const unsigned char charsAlt[] = {
     [0x01] = 27,
+    [0x29] = '\"',
     [0x02] = '!',
     [0x03] = '@',
     [0x04] = '#',
@@ -56,6 +57,7 @@ const unsigned char charsAlt[] = {
     [0x73] = '?'};
 const unsigned char chars[] = {
     [0x01] = 27,
+    [0x29] = '\'',
     [0x02] = '1',
     [0x03] = '2',
     [0x04] = '3',
