@@ -144,7 +144,6 @@ void vga_putchar(char c)
     }
     if (c == '\t')
     {
-        size_t index = terminal_row * VGA_WIDTH + terminal_column;
         for (size_t i = 0; i != 4; i++)
         {
             vga_putchar(' ');

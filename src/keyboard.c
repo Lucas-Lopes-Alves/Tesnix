@@ -35,9 +35,9 @@ locks kbd_state = {false,false,false};
 
 bool shift = false;
 
-const char* ptr = chars;
+const unsigned char* ptr = chars;
 
-const char keyboard_char(uint8_t scancode)
+char keyboard_char(uint8_t scancode)
 {
     if (scancode == 0x2A || scancode == 0x36)
     {
