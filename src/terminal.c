@@ -2,6 +2,8 @@
 #include <stdint.h>
 #include <stddef.h>
 
+void vga_writestring(const char *string);
+
 // list all the possible colors in vga mode
 enum vga_color
 {
@@ -46,6 +48,7 @@ static inline uint16_t vga_entry(unsigned char c, uint8_t color)
 size_t terminal_row = 0;
 size_t terminal_column = 0;
 uint8_t terminal_color;
+size_t initial_position = 0;
 volatile uint16_t *terminal_buffer = (volatile uint16_t *)VGA_MEMORY;
 
 // it's two loops to acess all the adresses in the buffer
@@ -63,6 +66,9 @@ void terminal_initialize(void)
             terminal_buffer[index] = caractere;
         }
     }
+
+    vga_writestring("tesnix> ");
+    initial_position = terminal_column;
 }
 
 size_t kstrlen(const char *str)
@@ -120,6 +126,8 @@ void vga_putchar(char c)
     {
         terminal_row++;
         terminal_column = 0;
+        vga_writestring("tesnix> ");
+        initial_position = terminal_column;
 
         if (terminal_row == VGA_HEIGHT)
             terminal_scroll();
@@ -127,10 +135,14 @@ void vga_putchar(char c)
     }
     if (c == '\b')
     {
-        terminal_column = terminal_column - 1;
-        if (terminal_column > 80)
+        if (terminal_column == initial_position)
         {
-            terminal_column = 80;
+            return;
+        }
+        terminal_column = terminal_column - 1;
+        if (terminal_column > 79)
+        {
+            terminal_column = 79;
             terminal_row -= 1;
             if (terminal_row > 25)
             {
