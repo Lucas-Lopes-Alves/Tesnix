@@ -11,5 +11,7 @@ void terminal_scroll();
 void vga_putchar(char c);
 void vga_write(const char *info, size_t size);
 void vga_writestring(const char *string);
+void detect_command(size_t initial, size_t actual_position);
+
 
 #endif
