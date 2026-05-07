@@ -11,7 +11,7 @@ void kernel_main(void)
         {
             uint8_t code = inb(0x60);
             char str[2] ={keyboard_char(code), '\0'};
-            if (str[0] == '\0') continue;
+            if (str[0] == '\0'){ continue;}
             vga_writestring(str);
         }
         // char str[3];

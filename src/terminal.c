@@ -48,7 +48,8 @@ static inline uint16_t vga_entry(unsigned char c, uint8_t color)
 size_t terminal_row = 0;
 size_t terminal_column = 0;
 uint8_t terminal_color;
-size_t initial_position = 0;
+size_t initial_column = 0;
+size_t initial_row = 0;
 char command[2000] = {0};
 volatile uint16_t *terminal_buffer = (volatile uint16_t *)VGA_MEMORY;
 
@@ -69,7 +70,8 @@ void terminal_initialize(void)
     }
 
     vga_writestring("tesnix> ");
-    initial_position = terminal_column;
+    initial_column = terminal_column;
+    initial_row = terminal_row;
 }
 
 void terminal_setcolor(uint8_t color)
@@ -97,6 +99,7 @@ void terminal_scroll()
         terminal_buffer[k + line] = vga_entry(' ', terminal_color);
     }
     terminal_row = VGA_HEIGHT - 1;
+    initial_row -= 1;
 }
 
 /*
@@ -115,33 +118,26 @@ void vga_putchar(char c)
     }
     if (c == '\n')
     {
-        
+        detect_command();
         terminal_row++;
         terminal_column = 0;
         vga_writestring("tesnix> ");
-        initial_position = terminal_column;
+        initial_column = terminal_column;
+        initial_row = terminal_row;
+        vga_writestring(command);
 
-        if (terminal_row == VGA_HEIGHT)
+        if (terminal_row == VGA_HEIGHT) {
             terminal_scroll();
+        }
         return;
     }
     if (c == '\b')
     {
-        if (terminal_column == initial_position)
+        if (terminal_column == initial_column)
         {
             return;
         }
         terminal_column = terminal_column - 1;
-        if (terminal_column > 79)
-        {
-            terminal_column = 79;
-            terminal_row -= 1;
-            if (terminal_row > 25)
-            {
-                terminal_row = 0;
-                terminal_column = 0;
-            }
-        }
         size_t index = terminal_row * VGA_WIDTH + terminal_column;
         terminal_buffer[index] = vga_entry(' ', terminal_color);
         return;
@@ -187,9 +183,11 @@ void vga_writestring(const char *string)
 void detect_command()
 {
     size_t count = 0;
-    for (int i = initial_position; i != terminal_column; i++ , count++)
+    size_t initial_index = (initial_row * VGA_WIDTH) + initial_column;
+    size_t actual_index = (terminal_row * VGA_WIDTH) + terminal_column;
+    for (size_t i = initial_index; i < actual_index; i++ , count++)
     {
-        size_t index = terminal_row * VGA_HEIGHT + initial_position;
-        command[count] = terminal_buffer[index];
+        command[count] = terminal_buffer[i];
     }
+    command[count] = '\0';
 }
