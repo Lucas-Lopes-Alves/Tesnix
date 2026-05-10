@@ -133,11 +133,18 @@ void vga_putchar(char c)
     }
     if (c == '\b')
     {
-        if (terminal_column == initial_column)
+        if (terminal_column == initial_column && terminal_row == initial_row)
         {
             return;
         }
-        terminal_column = terminal_column - 1;
+        if (terminal_column - 1 > VGA_WIDTH)
+        {
+            terminal_row -= 1;
+            terminal_column = VGA_WIDTH;
+        } else
+        {
+            terminal_column = terminal_column - 1;
+        }
         size_t index = terminal_row * VGA_WIDTH + terminal_column;
         terminal_buffer[index] = vga_entry(' ', terminal_color);
         return;

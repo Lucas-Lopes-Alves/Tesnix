@@ -45,7 +45,7 @@ char keyboard_char(uint8_t scancode)
         return '\0';
     }
 
-    if (scancode == 0xAA || scancode== 0xB6)
+    if (scancode == 0x2A + 0x80 || scancode== 0x36 + 0x80)
     {
         shift = false;
         return '\0';
@@ -56,6 +56,7 @@ char keyboard_char(uint8_t scancode)
         kbd_state.capslock = !kbd_state.capslock;
         ps2_write_wait();
         outb(0x60, 0xED);
+        inb(0x60);
         ps2_write_wait();
         outb(0x60, kbd_state.capslock ? 0x00 : 0x04);
         return '\0';
