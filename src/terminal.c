@@ -53,6 +53,13 @@ size_t initial_row = 0;
 char command[2000] = {0};
 volatile uint16_t *terminal_buffer = (volatile uint16_t *)VGA_MEMORY;
 
+static inline void prompt()
+{
+    vga_writestring("tesnix> ");
+    initial_column = terminal_column;
+    initial_row = terminal_row;
+}
+
 // it's two loops to acess all the adresses in the buffer
 // and clean them, it acess like a matrix using rows and columns
 // but translates it to 1D and saves in the index variable
@@ -69,9 +76,7 @@ void terminal_initialize(void)
         }
     }
 
-    vga_writestring("tesnix> ");
-    initial_column = terminal_column;
-    initial_row = terminal_row;
+    prompt();
 }
 
 void terminal_setcolor(uint8_t color)
@@ -121,9 +126,7 @@ void vga_putchar(char c)
         detect_command();
         terminal_row++;
         terminal_column = 0;
-        vga_writestring("tesnix> ");
-        initial_column = terminal_column;
-        initial_row = terminal_row;
+        prompt();
         vga_writestring(command);
 
         if (terminal_row == VGA_HEIGHT) {
@@ -194,7 +197,7 @@ void detect_command()
     size_t actual_index = (terminal_row * VGA_WIDTH) + terminal_column;
     for (size_t i = initial_index; i < actual_index; i++ , count++)
     {
-        command[count] = terminal_buffer[i];
+        command[count] = (char)terminal_buffer[i];
     }
     command[count] = '\0';
 }
