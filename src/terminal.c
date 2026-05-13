@@ -48,10 +48,13 @@ static inline uint16_t vga_entry(unsigned char c, uint8_t color)
 size_t terminal_row = 0;
 size_t terminal_column = 0;
 uint8_t terminal_color;
+
 size_t initial_column = 0;
 size_t initial_row = 0;
 char command[2000] = {0};
+
 volatile uint16_t *terminal_buffer = (volatile uint16_t *)VGA_MEMORY;
+#define VGA_BUFFER ((volatile uint16_t(*)[80])terminal_buffer)
 
 static inline void prompt()
 {
@@ -71,11 +74,25 @@ void terminal_initialize(void)
     {
         for (size_t j = 0; j < VGA_WIDTH; j++)
         {
-            size_t index = i * VGA_WIDTH + j;
-            terminal_buffer[index] = caractere;
+            VGA_BUFFER[i][j] = caractere;
         }
     }
 
+    prompt();
+}
+
+void clear()
+{
+    for (size_t i = 0; i < VGA_WIDTH; i++)
+    {
+        for (size_t j = 0; j < VGA_WIDTH; j++)
+        {
+            VGA_BUFFER[i][j] = vga_entry(' ', terminal_color);
+        }
+    }
+
+    terminal_column = 0;
+    terminal_row = 0;
     prompt();
 }
 
@@ -92,16 +109,13 @@ void terminal_scroll()
     {
         for (size_t j = 0; j < VGA_WIDTH; j++)
         {
-            int value = (i - 1) * VGA_WIDTH + j;
-            int position = i * VGA_WIDTH + j;
-            terminal_buffer[value] = terminal_buffer[position];
+            VGA_BUFFER[i-1][j] = VGA_BUFFER[i][j];
         }
     }
 
-    size_t line = (VGA_HEIGHT - 1) * VGA_WIDTH;
     for (size_t k = 0; k < VGA_WIDTH; k++)
     {
-        terminal_buffer[k + line] = vga_entry(' ', terminal_color);
+        VGA_BUFFER[24][k] = vga_entry(' ', terminal_color);
     }
     terminal_row = VGA_HEIGHT - 1;
     initial_row -= 1;
@@ -127,7 +141,11 @@ void vga_putchar(char c)
         terminal_row++;
         terminal_column = 0;
         prompt();
-        vga_writestring(command);
+        if (kstrcmp(command,"clear"))
+        {
+            clear();
+            return;
+        }
 
         if (terminal_row == VGA_HEIGHT) {
             terminal_scroll();
@@ -148,8 +166,7 @@ void vga_putchar(char c)
         {
             terminal_column = terminal_column - 1;
         }
-        size_t index = terminal_row * VGA_WIDTH + terminal_column;
-        terminal_buffer[index] = vga_entry(' ', terminal_color);
+        VGA_BUFFER[terminal_row][terminal_column] = vga_entry(' ', terminal_color);
         return;
     }
     if (c == '\t')
@@ -160,8 +177,7 @@ void vga_putchar(char c)
         }
         return;
     }
-    size_t index = terminal_row * VGA_WIDTH + terminal_column;
-    terminal_buffer[index] = vga_entry(c,terminal_color);
+    VGA_BUFFER[terminal_row][terminal_column] = vga_entry(c,terminal_color);
     terminal_column++;
     if (terminal_column == VGA_WIDTH)
     {
