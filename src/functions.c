@@ -19,14 +19,16 @@ bool kstrcmp(const char* str1, const char* str2)
     size_t count = 0;
     while(str1[count] != '\0')
     {
-        if (str1[count] == str2[count])
+        if (str1[count] != str2[count])
         {
             count++;
             continue;
-        } else
-        {
-            return false;
         }
     }
-    return true;
+    return (str2[count] == '\0');
 }
+
+// char* kstrcat(char* str1,char* str2)
+// {
+    
+// }
