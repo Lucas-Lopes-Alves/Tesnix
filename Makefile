@@ -1,4 +1,4 @@
-PLACE?=isos/kernel.iso
+PLACE?="-cdrom isos/kernel.iso"
 CC=i686-elf-gcc
 AS = i686-elf-as
 CFLAGS= -ffreestanding -Iinclude -O2 -Wall -Wextra -fno-stack-protector -fno-builtin -fno-pic -fno-pie
@@ -66,7 +66,7 @@ debugBin/D%.o: src/%.s
 #End debug
 
 emulate:
-	@qemu-system-i386 -cdrom $(PLACE)
+	@qemu-system-i386 $(PLACE)
 
 clean:
 	@rm -f ./bin/* ./isos/* ./debugBin/* ./iso/boot/*.elf ./debug/iso/boot/*.elf ./obj/*
