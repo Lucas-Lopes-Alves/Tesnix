@@ -65,7 +65,7 @@ debugBin/D%.o: src/%.s
 	@echo "Done"
 #End debug
 
-emulate:
+run:
 	@qemu-system-i386 $(PLACE)
 
 clean:
