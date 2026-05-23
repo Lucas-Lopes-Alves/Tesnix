@@ -21,9 +21,9 @@ bool kstrcmp(const char* str1, const char* str2)
     {
         if (str1[count] != str2[count])
         {
-            count++;
-            continue;
+            break;
         }
+        count++;
     }
     return (str2[count] == '\0');
 }
