@@ -3,6 +3,8 @@ CC=i686-elf-gcc
 AS = i686-elf-as
 CFLAGS= -ffreestanding -Iinclude -O2 -Wall -Wextra -fno-stack-protector -fno-builtin -fno-pic -fno-pie
 LDFLAGS= -ffreestanding -nostdlib -lgcc
+
+QEMUFLAGS?=""
 # Saves all the files ending with .c to
 # change them from .c to .o
 SRCS_C := $(wildcard src/*.c)
@@ -66,7 +68,7 @@ debugBin/D%.o: src/%.s
 #End debug
 
 run:
-	@qemu-system-i386 -cdrom $(PLACE)
+	@qemu-system-i386 -cdrom $(PLACE) $(QEMUFLAGS)
 
 clean:
 	@rm -f ./bin/* ./isos/* ./debugBin/* ./iso/boot/*.elf ./debug/iso/boot/*.elf ./obj/*
