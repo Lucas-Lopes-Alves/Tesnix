@@ -4,7 +4,7 @@ AS = i686-elf-as
 CFLAGS= -ffreestanding -Iinclude -O2 -Wall -Wextra -fno-stack-protector -fno-builtin -fno-pic -fno-pie
 LDFLAGS= -ffreestanding -nostdlib -lgcc
 
-QEMUFLAGS?=""
+QEMUFLAGS?=
 # Saves all the files ending with .c to
 # change them from .c to .o
 SRCS_C := $(wildcard src/*.c)
