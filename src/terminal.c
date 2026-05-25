@@ -51,7 +51,7 @@ uint8_t terminal_color;
 
 size_t initial_column = 0;
 size_t initial_row = 0;
-char command[200][200] = {0};
+char command[2000] = {0};
 
 volatile uint16_t *terminal_buffer = (volatile uint16_t *)VGA_MEMORY;
 #define VGA_BUFFER ((volatile uint16_t(*)[80])terminal_buffer)
@@ -98,7 +98,9 @@ void clear()
 
 void echo()
 {
-    vga_writestring(command[1]);
+    vga_writestring(command);
+    vga_putchar('\n');
+    return;
 }
 
 void terminal_setcolor(uint8_t color)
@@ -146,12 +148,12 @@ void vga_putchar(char c)
         terminal_row++;
         terminal_column = 0;
         prompt();
-        if (kstrcmp(command[0],"clear"))
+        if (kstrcmp(command,"clear"))
         {
             clear();
             return;
         }
-        if (kstrcmp(command[0],"echo"))
+        if (kstrcmp(command,"echo"))
         {
             echo();
             return;
@@ -219,19 +221,11 @@ void vga_writestring(const char *string)
 void detect_command()
 {
     size_t count = 0;
-    size_t count2 = 0;
     size_t initial_index = (initial_row * VGA_WIDTH) + initial_column;
     size_t actual_index = (terminal_row * VGA_WIDTH) + terminal_column;
-    for (size_t i = initial_index; i < actual_index; i++ , count++)
+    for (size_t i = initial_index; i < actual_index; i++, count++)
     {
-        if ((char)terminal_buffer[i] == ' ')
-        {
-            command[count][count2] = '\0';
-            count++;
-            count2=0;
-            continue;
-        }
-        command[count][count2] = terminal_buffer[i];
-        count2++;
+        command[count] = (char)terminal_buffer[i];
     }
+    command[count] = '\n';
 }
