@@ -241,7 +241,7 @@ void detect_command()
     for (size_t i = initial_index; i < actual_index; i++, count++)
     {
         command[count] = (char)terminal_buffer[i];
-        if (terminal_buffer[i] = ' ')
+        if (terminal_buffer[i] == ' ')
         {
             
         }
