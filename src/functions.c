@@ -16,16 +16,12 @@ size_t kstrlen(const char *str)
 
 bool kstrcmp(const char* str1, const char* str2)
 {
-    size_t count = 0;
-    while(str1[count] != '\0')
+    while(*str1 && (*str1 == *str2))
     {
-        if (str1[count] != str2[count])
-        {
-            break;
-        }
-        count++;
+        str1++;
+        str2++;
     }
-    return (str2[count] == '\0');
+    return (*str2=='\0');
 }
 
 // char* kstrcat(char* str1,char* str2)
