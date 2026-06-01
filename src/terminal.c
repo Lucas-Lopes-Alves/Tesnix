@@ -100,18 +100,24 @@ void echo()
 {
     terminal_row += 1;
     terminal_column = 0;
-    size_t c = 0;
-    while (command[c] != '\0')
+    size_t character = 0;
+    while (command[character] != ' ')
+    {
+        character++;
+    }
+    character++;
+    while (command[character])
     {
         if (terminal_row > VGA_HEIGHT)
         {
             terminal_scroll();
         }
-        VGA_BUFFER[terminal_row][terminal_column] = vga_entry(command[c],terminal_color);
+        VGA_BUFFER[terminal_row][terminal_column] = vga_entry(command[character],terminal_color);
         terminal_column++;
         if (terminal_column > VGA_WIDTH)
         {
             terminal_row++;
+            terminal_column = 0;
         }
     }
     prompt();
@@ -241,10 +247,6 @@ void detect_command()
     for (size_t i = initial_index; i < actual_index; i++, count++)
     {
         command[count] = (char)terminal_buffer[i];
-        if (terminal_buffer[i] == ' ')
-        {
-            
-        }
     }
     command[count] = '\0';
 }
