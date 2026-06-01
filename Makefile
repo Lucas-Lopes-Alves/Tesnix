@@ -71,4 +71,4 @@ run:
 	@qemu-system-i386 -cdrom $(PLACE) $(QEMUFLAGS)
 
 clean:
-	@rm -rf build/
+	@rm -rf build/bin/* build/debug/iso/boot/Dkernel.elf build/debugBin/* build/iso/boot/kernel.elf build/isos/* build/obj/*

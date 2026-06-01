@@ -51,7 +51,9 @@ uint8_t terminal_color;
 
 size_t initial_column = 0;
 size_t initial_row = 0;
-char command[2000] = {0};
+char line[2000] = {0};
+char command[100] = {0};
+
 
 volatile uint16_t *terminal_buffer = (volatile uint16_t *)VGA_MEMORY;
 #define VGA_BUFFER ((volatile uint16_t(*)[80])terminal_buffer)
@@ -101,18 +103,18 @@ void echo()
     terminal_row += 1;
     terminal_column = 0;
     size_t character = 0;
-    while (command[character] != ' ')
+    while (line[character] != ' ')
     {
         character++;
     }
     character++;
-    while (command[character])
+    while (line[character])
     {
         if (terminal_row > VGA_HEIGHT)
         {
             terminal_scroll();
         }
-        VGA_BUFFER[terminal_row][terminal_column] = vga_entry(command[character],terminal_color);
+        VGA_BUFFER[terminal_row][terminal_column] = vga_entry(line[character],terminal_color);
         terminal_column++;
         if (terminal_column > VGA_WIDTH)
         {
@@ -244,9 +246,19 @@ void detect_command()
     size_t count = 0;
     size_t initial_index = (initial_row * VGA_WIDTH) + initial_column;
     size_t actual_index = (terminal_row * VGA_WIDTH) + terminal_column;
+    count = initial_index;
+    size_t temp = 0;
+    while(line[count] != ' '){
+        command[temp] = (char)terminal_buffer[count];
+        count++;
+        temp++;
+    }
+    temp++;
+    command[temp] = '\0';
+    count = 0;
     for (size_t i = initial_index; i < actual_index; i++, count++)
     {
-        command[count] = (char)terminal_buffer[i];
+        line[count] = (char)terminal_buffer[i];
     }
-    command[count] = '\0';
+    line[count] = '\0';
 }
