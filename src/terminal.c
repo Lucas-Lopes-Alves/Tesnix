@@ -85,7 +85,7 @@ void terminal_initialize(void)
 
 void clear()
 {
-    for (size_t i = 0; i < VGA_WIDTH; i++)
+    for (size_t i = 0; i < VGA_HEIGHT; i++)
     {
         for (size_t j = 0; j < VGA_WIDTH; j++)
         {
@@ -248,7 +248,7 @@ void detect_command()
     size_t actual_index = (terminal_row * VGA_WIDTH) + terminal_column;
     count = initial_index;
     size_t temp = 0;
-    while(line[count] != ' '){
+    while((char)terminal_buffer[count] != ' '){
         command[temp] = (char)terminal_buffer[count];
         count++;
         temp++;
