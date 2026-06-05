@@ -121,7 +121,10 @@ void echo()
             terminal_row++;
             terminal_column = 0;
         }
+        character++;
     }
+    terminal_row+=1;
+    terminal_column = 0;
     prompt();
     return;
 }
@@ -168,9 +171,6 @@ void vga_putchar(char c)
     if (c == '\n')
     {
         detect_command();
-        terminal_row++;
-        terminal_column = 0;
-        prompt();
         if (kstrcmp(command,"clear"))
         {
             clear();
@@ -181,6 +181,9 @@ void vga_putchar(char c)
             echo();
             return;
         }
+        terminal_row++;
+        terminal_column = 0;
+        prompt();
 
         if (terminal_row == VGA_HEIGHT) {
             terminal_scroll();
