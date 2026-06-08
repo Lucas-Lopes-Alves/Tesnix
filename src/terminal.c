@@ -3,6 +3,7 @@
 #include <stddef.h>
 #include "terminal.h"
 #include "functions.h"
+#include "io.h"
 
 // list all the possible colors in vga mode
 enum vga_color
@@ -96,26 +97,43 @@ void clear()
     terminal_column = 0;
     terminal_row = 0;
     prompt();
+    update_cursor(terminal_row, terminal_column);
 }
 
+/*
+ * Executes the "echo" command in the terminal, ignoring the initial word echo
+ * (finding an space character ' '), this function jumps to the next line and 
+ * print the rest of the text directly in the vga text buffer, handles the end
+ * of the screen scrolling the terminal and update the terminal cursor
+ */
 void echo()
 {
+    // go to the start of the next line
     terminal_row += 1;
     terminal_column = 0;
     size_t character = 0;
+
+    // add to the index to ignore the word echo
     while (line[character] != ' ')
     {
         character++;
     }
-    character++;
+    character++; //increment to ignore the first space
+
+    // print text in the vga buffer while the character is diferent from '\0'
     while (line[character])
     {
+        // checks if it's in the last line of the buffer
         if (terminal_row > VGA_HEIGHT)
         {
             terminal_scroll();
         }
+
+        // write directly in the buffer with text + color
         VGA_BUFFER[terminal_row][terminal_column] = vga_entry(line[character],terminal_color);
         terminal_column++;
+
+        // if it reaches the horizontal limit of the buffer, it goes start of the next line
         if (terminal_column > VGA_WIDTH)
         {
             terminal_row++;
@@ -123,10 +141,24 @@ void echo()
         }
         character++;
     }
+
+    // configure the enviroment to the next command
     terminal_row+=1;
     terminal_column = 0;
-    prompt();
+    prompt(); // print the command indicator (tesnix> )
+
+    // update the cursor to the actual position of the
+    update_cursor(terminal_row, terminal_column);
     return;
+}
+
+void update_cursor(size_t y, size_t x)
+{
+    uint16_t pos = y * VGA_WIDTH + x;
+    outb(0x3D4, 0x0F);
+    outb(0x3D5, (uint8_t) (pos & 0xFF));
+    outb(0x3D4, 0x0E);
+    outb(0x3D5, (uint8_t) ((pos >> 8) & 0xFF));
 }
 
 void terminal_setcolor(uint8_t color)
@@ -239,6 +271,7 @@ void vga_write(const char *info, size_t size)
 void vga_writestring(const char *string)
 {
     vga_write(string, kstrlen(string));
+    update_cursor(terminal_row, terminal_column);
 }
 
 /*

@@ -12,6 +12,7 @@ void vga_putchar(char c);
 void vga_write(const char *info, size_t size);
 void vga_writestring(const char *string);
 void detect_command();
+void update_cursor(size_t y, size_t x);
 
 
 #endif
