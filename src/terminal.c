@@ -44,8 +44,7 @@ static inline uint16_t vga_entry(unsigned char c, uint8_t color)
 #define VGA_HEIGHT 25
 #define VGA_MEMORY 0xB8000
 
-// The terminal_buffer set as volatile to prevent otimizations
-// that can ignore the acess to the memory
+
 size_t terminal_row = 0;
 size_t terminal_column = 0;
 uint8_t terminal_color;
@@ -56,14 +55,19 @@ char line[2000] = {0};
 char command[100] = {0};
 
 
+// The terminal_buffer set as volatile to prevent otimizations
+// that can ignore the acess to the memory
 volatile uint16_t *terminal_buffer = (volatile uint16_t *)VGA_MEMORY;
 #define VGA_BUFFER ((volatile uint16_t(*)[80])terminal_buffer)
 
 static inline void prompt()
 {
+    uint8_t temp = terminal_color;
+    terminal_setcolor(vga_entry_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK));
     vga_writestring("tesnix> ");
     initial_column = terminal_column;
     initial_row = terminal_row;
+    terminal_setcolor(temp);
 }
 
 // it's two loops to acess all the adresses in the buffer
