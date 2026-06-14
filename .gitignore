@@ -1,6 +1,9 @@
 # folders
 .vscode/
-build/
+build/bin
+build/debugBin
+build/isos
+build/obj
 
 # files
 *.iso

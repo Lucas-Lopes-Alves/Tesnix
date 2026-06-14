@@ -1,12 +1,13 @@
 services:
   tesnix:
-    image: tesnix:v2
+    image: luckys2008/tesnix:v3.2
     container_name: tesnix
     volumes:
-      - ${HOME}/.Xauthority:/root/.Xauthority:ro
+      - ${XAUTHORITY}:${XAUTHORITY}:ro
       - ./:/tesnix
+      - /tmp/.X11-unix/:/tmp/.X11-unix/
     environment:
       - DISPLAY=${DISPLAY}
-      - XAUTHORITY=/root/.Xauthority
+      - XAUTHORITY=${XAUTHORITY}
     stdin_open: true
     tty: true
