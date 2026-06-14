@@ -1,0 +1,12 @@
+services:
+  tesnix:
+    image: tesnix:v2
+    container_name: tesnix
+    volumes:
+      - ${HOME}/.Xauthority:/root/.Xauthority:ro
+      - ./:/tesnix
+    environment:
+      - DISPLAY=${DISPLAY}
+      - XAUTHORITY=/root/.Xauthority
+    stdin_open: true
+    tty: true
