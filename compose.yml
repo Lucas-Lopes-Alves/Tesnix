@@ -1,13 +1,17 @@
 services:
   tesnix:
-    image: luckys2008/tesnix:v3.2
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: luckys2008/tesnix:v4
     container_name: tesnix
+    hostname: tesnix
     volumes:
-      - ${XAUTHORITY}:${XAUTHORITY}:ro
+      - ${XAUTHORITY}:/tmp/.Xauthority
       - ./:/tesnix
       - /tmp/.X11-unix/:/tmp/.X11-unix/
     environment:
       - DISPLAY=${DISPLAY}
-      - XAUTHORITY=${XAUTHORITY}
+      - XAUTHORITY=/tmp/.Xauthority
     stdin_open: true
     tty: true
