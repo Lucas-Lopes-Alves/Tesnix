@@ -7,13 +7,11 @@ LDFLAGS= -ffreestanding -nostdlib -lgcc
 QEMUFLAGS?=
 # Saves all the files ending with .c to
 # change them from .c to .o
-SRCS_C := $(wildcard src/*.c)
-SRCS_S := $(wildcard src/*.s)
-OBJS := $(patsubst src/%.c, build/obj/%.o, $(SRCS_C))
+SRCS_C := $(shell find src -type f -name "*.c")
+SRCS_S := $(shell find src -type f -name "*.s")
 OBJS := $(patsubst src/%.c, build/obj/%.o, $(SRCS_C))
 OBJS += $(patsubst src/%.s, build/obj/%.o, $(SRCS_S))
-DOBJS := $(patsubst src/%.c, build/debugBin/D%.o, $(SRCS_C))
-DOBJS := $(patsubst src/%.c, build/debugBin/D%.o, $(SRCS_C))
+DOBJS := $(patsubst srd/%.c, build/debugBin/D%.o, $(SRCS_C))
 DOBJS += $(patsubst src/%.s, build/debugBin/D%.o, $(SRCS_S))
 
 # Checks if the folders exists to create them if not exists and don't create if it exists
@@ -38,14 +36,17 @@ build: $(OBJS)
 # Tells make how to create the C and Assembly 
 # object files and where to place them
 build/obj/%.o: src/%.c
+	@mkdir -p $(dir $@)
 	@echo "Compiling the C files"
 	@$(CC) $(CFLAGS) -c $< -o $@
 	@echo "Done"
 
 build/obj/%.o: src/%.s
+	@mkdir -p $(dir $@)
 	@echo "Compiling the Assembly files"
 	@$(AS) $< -o $@
 	@echo "Done"
+
 #End build section
 
 #Debug section

@@ -14,14 +14,14 @@ size_t kstrlen(const char *str)
     return size;
 }
 
-bool kstrcmp(const char* str1, const char* str2)
+size_t kstrcmp(const char* str1, const char* str2)
 {
     while(*str1 && (*str1 == *str2))
     {
         str1++;
         str2++;
     }
-    return (*str2=='\0');
+    return (unsigned char)*str1 - (unsigned char) *str2;
 }
 
 // char* kstrcat(char* str1,char* str2)

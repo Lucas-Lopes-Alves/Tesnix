@@ -1,9 +1,11 @@
 #include "terminal.h"
 #include "keyboard.h"
 #include "io.h"
+#include "gdt.h"
 
 void kernel_main(void)
 {
+    gdt_init();
     terminal_initialize();
     while (1)
     {
