@@ -99,6 +99,4 @@ ENV PATH=/cross/bin:${PATH}
 
 WORKDIR /tesnix
 
-COPY . .
-
 ENTRYPOINT [ "bash" ]

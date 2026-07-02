@@ -7,11 +7,9 @@ services:
     container_name: tesnix
     hostname: tesnix
     volumes:
-      - ${XAUTHORITY}:/tmp/.Xauthority
       - ./:/tesnix
       - /tmp/.X11-unix/:/tmp/.X11-unix/
     environment:
       - DISPLAY=${DISPLAY}
-      - XAUTHORITY=/tmp/.Xauthority
     stdin_open: true
     tty: true
