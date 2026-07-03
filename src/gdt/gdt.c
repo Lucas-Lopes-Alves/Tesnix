@@ -36,12 +36,12 @@ void gdt_set_entry(size_t index, uint32_t limit, uint32_t base, uint8_t acess, u
 
 void gdt_init(void)
 {
-    gdtr.limit = (sizeof(gdt)*3) - 1;
+    gdtr.limit = sizeof(gdt) - 1;
     gdtr.base = (uint32_t)&gdt;
 
     gdt_set_entry(0,0,0,0,0);
     gdt_set_entry(1,0x000fffff,0x0,0x9a,0x0c);
     gdt_set_entry(2,0x000fffff,0x0,0x92,0x0c);
 
-    gdt_load(&gdt);
+    gdt_load(&gdtr);
 }

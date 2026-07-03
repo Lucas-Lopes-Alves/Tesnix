@@ -44,7 +44,6 @@ static inline uint16_t vga_entry(unsigned char c, uint8_t color)
 #define VGA_HEIGHT 25
 #define VGA_MEMORY 0xB8000
 
-
 size_t terminal_row = 0;
 size_t terminal_column = 0;
 uint8_t terminal_color;
@@ -54,11 +53,10 @@ size_t initial_row = 0;
 char line[2000] = {0};
 char command[100] = {0};
 
-
 // The terminal_buffer set as volatile to prevent otimizations
 // that can ignore the acess to the memory
 volatile uint16_t *terminal_buffer = (volatile uint16_t *)VGA_MEMORY;
-#define VGA_BUFFER ((volatile uint16_t(*)[80])terminal_buffer)
+#define VGA_BUFFER ((volatile uint16_t (*)[80])terminal_buffer)
 
 static inline void prompt()
 {
@@ -106,7 +104,7 @@ void clear()
 
 /*
  * Executes the "echo" command in the terminal, ignoring the initial word echo
- * (finding an space character ' '), this function jumps to the next line and 
+ * (finding an space character ' '), this function jumps to the next line and
  * print the rest of the text directly in the vga text buffer, handles the end
  * of the screen scrolling the terminal and update the terminal cursor
  */
@@ -122,7 +120,7 @@ void echo()
     {
         character++;
     }
-    character++; //increment to ignore the first space
+    character++; // increment to ignore the first space
 
     // print text in the vga buffer while the character is diferent from '\0'
     while (line[character])
@@ -134,7 +132,7 @@ void echo()
         }
 
         // write directly in the buffer with text + color
-        VGA_BUFFER[terminal_row][terminal_column] = vga_entry(line[character],terminal_color);
+        VGA_BUFFER[terminal_row][terminal_column] = vga_entry(line[character], terminal_color);
         terminal_column++;
 
         // if it reaches the horizontal limit of the buffer, it goes start of the next line
@@ -147,7 +145,7 @@ void echo()
     }
 
     // configure the enviroment to the next command
-    terminal_row+=1;
+    terminal_row += 1;
     terminal_column = 0;
     prompt(); // print the command indicator (tesnix> )
 
@@ -156,18 +154,26 @@ void echo()
     return;
 }
 
-void fault(void)
+void test(void)
 {
-
+    asm volatile(
+        "movw $0x28, %%ax\n\t"
+        "movw %%ax, %%ds\n\t"
+        "movw %%ax, %%es\n\t"
+        "movw %%ax, %%fs\n\t"
+        "movw %%ax, %%gs"
+        :
+        :
+        : "ax");
 }
 
 void update_cursor(size_t y, size_t x)
 {
     uint16_t pos = y * VGA_WIDTH + x;
     outb(0x3D4, 0x0F);
-    outb(0x3D5, (uint8_t) (pos & 0xFF));
+    outb(0x3D5, (uint8_t)(pos & 0xFF));
     outb(0x3D4, 0x0E);
-    outb(0x3D5, (uint8_t) ((pos >> 8) & 0xFF));
+    outb(0x3D5, (uint8_t)((pos >> 8) & 0xFF));
 }
 
 void terminal_setcolor(uint8_t color)
@@ -183,7 +189,7 @@ void terminal_scroll()
     {
         for (size_t j = 0; j < VGA_WIDTH; j++)
         {
-            VGA_BUFFER[i-1][j] = VGA_BUFFER[i][j];
+            VGA_BUFFER[i - 1][j] = VGA_BUFFER[i][j];
         }
     }
 
@@ -212,25 +218,27 @@ void vga_putchar(char c)
     if (c == '\n')
     {
         detect_command();
-        if (kstrcmp(command,"clear") == 0)
+        if (kstrcmp(command, "clear") == 0)
         {
             clear();
             return;
         }
-        if (kstrcmp(command,"echo") == 0)
+        if (kstrcmp(command, "echo") == 0)
         {
             echo();
             return;
         }
-        if (kstrcmp(command, "fault"))
+        if (kstrcmp(command, "test") == 0)
         {
-
+            test();
+            return;
         }
         terminal_row++;
         terminal_column = 0;
         prompt();
 
-        if (terminal_row == VGA_HEIGHT) {
+        if (terminal_row == VGA_HEIGHT)
+        {
             terminal_scroll();
         }
         return;
@@ -245,7 +253,8 @@ void vga_putchar(char c)
         {
             terminal_row -= 1;
             terminal_column = VGA_WIDTH;
-        } else
+        }
+        else
         {
             terminal_column = terminal_column - 1;
         }
@@ -260,7 +269,7 @@ void vga_putchar(char c)
         }
         return;
     }
-    VGA_BUFFER[terminal_row][terminal_column] = vga_entry(c,terminal_color);
+    VGA_BUFFER[terminal_row][terminal_column] = vga_entry(c, terminal_color);
     terminal_column++;
     if (terminal_column == VGA_WIDTH)
     {
@@ -297,7 +306,8 @@ void detect_command()
     size_t actual_index = (terminal_row * VGA_WIDTH) + terminal_column;
     count = initial_index;
     size_t temp = 0;
-    while((char)terminal_buffer[count] != ' '){
+    while ((char)terminal_buffer[count] != ' ')
+    {
         command[temp] = (char)terminal_buffer[count];
         count++;
         temp++;
@@ -309,5 +319,5 @@ void detect_command()
     {
         line[count] = (char)terminal_buffer[i];
     }
-    line[count+1] = '\0';
+    line[count] = '\0';
 }
