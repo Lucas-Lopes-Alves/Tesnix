@@ -2,7 +2,7 @@
 #include <stddef.h>
 #include "descriptors/gdt.h"
 
-struct gdt_entry
+typedef struct gdt_entry
 {
     uint16_t limit_low;
     uint16_t base_low;
@@ -10,18 +10,18 @@ struct gdt_entry
     uint8_t acess;
     uint8_t granularity;
     uint8_t base_high;
-} __attribute__((packed));
+} __attribute__((packed)) gdt_entry_t;
 
-struct gdt_ptr
+typedef struct gdt_ptr
 {
     uint16_t limit;
     uint32_t base;
-} __attribute__((packed));
+} __attribute__((packed)) gdt_ptr_t;
 
-struct gdt_ptr gdtr;
+gdt_ptr_t gdtr;
 
-
-struct gdt_entry gdt[3];
+__attribute__((aligned(0x10)))
+gdt_entry_t gdt[3];
 
 void gdt_set_entry(size_t index, uint32_t limit, uint32_t base, uint8_t acess, uint8_t flags)
 {

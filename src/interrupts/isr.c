@@ -1,4 +1,4 @@
-#include "handlers/handler.h"
+#include "interrupts/isr.h"
 
 __attribute__((noreturn))
 void exception_handler(void){
