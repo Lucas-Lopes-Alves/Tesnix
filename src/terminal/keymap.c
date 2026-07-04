@@ -1,4 +1,4 @@
-#include "keymap.h"
+#include "terminal/keymap.h"
 
 const unsigned char charsAlt[] = {
     [0x01] = 27,

@@ -1,7 +1,7 @@
-#include "terminal.h"
-#include "keyboard.h"
+#include "terminal/terminal.h"
+#include "terminal/keyboard.h"
 #include "io.h"
-#include "gdt.h"
+#include "descriptors/gdt.h"
 
 void kernel_main(void)
 {

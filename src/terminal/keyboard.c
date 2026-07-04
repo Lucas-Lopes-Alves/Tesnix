@@ -1,7 +1,7 @@
 #include "io.h"
 #include <stdint.h>
 #include <stdbool.h>
-#include "keymap.h"
+#include "terminal/keymap.h"
 
 void ps2_write_wait()
 {

@@ -1,7 +1,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stddef.h>
-#include "terminal.h"
+#include "terminal/terminal.h"
 #include "functions.h"
 #include "io.h"
 

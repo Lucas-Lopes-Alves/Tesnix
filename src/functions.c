@@ -2,7 +2,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include "functions.h"
-#include "terminal.h"
+#include "terminal/terminal.h"
 
 size_t kstrlen(const char *str)
 {
