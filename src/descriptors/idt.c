@@ -44,3 +44,8 @@ void idt_init() {
 
     idt_load(&idtr);
 }
+
+void idt_install_irq()
+{
+    
+}

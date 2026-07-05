@@ -2,14 +2,15 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "terminal/keymap.h"
+#include "terminal/terminal.h"
 
-void ps2_write_wait()
+static inline void ps2_write_wait()
 {
     while (inb(0x64) & 0x02)
         ;
 }
 
-void ps2_read_wait()
+static inline void ps2_read_wait()
 {
     while (!(inb(0x64) & 0x01))
         ;
@@ -29,13 +30,13 @@ typedef struct locks
     bool capslock;
     bool scrollock;
     bool numlock;
-}locks;
+} locks;
 
-locks kbd_state = {false,false,false};
+locks kbd_state = {false, false, false};
 
 bool shift = false;
 
-const unsigned char* ptr = chars;
+const unsigned char *ptr = chars;
 
 char keyboard_char(uint8_t scancode)
 {
@@ -45,7 +46,7 @@ char keyboard_char(uint8_t scancode)
         return '\0';
     }
 
-    if (scancode == 0x2A + 0x80 || scancode== 0x36 + 0x80)
+    if (scancode == 0x2A + 0x80 || scancode == 0x36 + 0x80)
     {
         shift = false;
         return '\0';
