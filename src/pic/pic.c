@@ -25,7 +25,7 @@
 #include "io.h"
 #include "pic/pic.h"
 
-void PIC_sendEOI(uint8_t irq)
+void PIC_sendEOI(uint32_t irq)
 {
 	if(irq >= 8)
 		outb(PIC2_COMMAND,PIC_EOI);

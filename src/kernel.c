@@ -5,12 +5,13 @@
 
 void kernel_main(void)
 {
+    __asm__ volatile("cli");
     gdt_init();
     idt_init();
     PIC_remap(0x20,0x28);
     terminal_initialize();
     
-    // __asm__ volatile("sti");
+    __asm__ volatile("sti");
     for (;;)
     {
         __asm__ volatile("hlt");

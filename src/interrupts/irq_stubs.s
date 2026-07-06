@@ -3,11 +3,15 @@
 .global irq_stub_\num
 
 irq_stub_\num:
-    pushal
+    pushl $0
     pushl $\num
-    pushl %esp
+    pushal
+    movl %esp, %eax
+    pushl %eax
     call common_handler
+    addl $4, %esp
     popal
+    addl $8, %esp
     iret
 
 .endm

@@ -11,7 +11,7 @@ SRCS_C := $(shell find src -type f -name "*.c")
 SRCS_S := $(shell find src -type f -name "*.s")
 OBJS := $(patsubst src/%.c, build/obj/%.o, $(SRCS_C))
 OBJS += $(patsubst src/%.s, build/obj/%.o, $(SRCS_S))
-DOBJS := $(patsubst srd/%.c, build/debugBin/D%.o, $(SRCS_C))
+DOBJS := $(patsubst src/%.c, build/debugBin/D%.o, $(SRCS_C))
 DOBJS += $(patsubst src/%.s, build/debugBin/D%.o, $(SRCS_S))
 
 # Checks if the folders exists to create them if not exists and don't create if it exists
@@ -58,11 +58,13 @@ debug: $(DOBJS)
 	@echo "Iso created"
 
 build/debugBin/D%.o: src/%.c
+	@mkdir -p $(dir $@)
 	@echo "Compiling the C files"
 	@$(CC) $(CFLAGS) -g -O0 -c $< -o $@
 	@echo "Done"
 
 build/debugBin/D%.o: src/%.s
+	@mkdir -p $(dir $@)
 	@echo "Compiling the Assembly files"
 	@$(AS) $< -o $@
 	@echo "Done"

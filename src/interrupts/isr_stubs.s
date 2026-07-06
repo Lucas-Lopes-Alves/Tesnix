@@ -3,11 +3,14 @@
 .global isr_stub_\num
 
 isr_stub_\num:
-    pushal
     pushl $\num
-    pushl %esp
+    pushal
+    movl %esp, %eax
+    pushl %eax
     call common_handler
+    add $4, %esp
     popal
+    add $4, %esp
     iret
 .endm
 
@@ -16,10 +19,14 @@ isr_stub_\num:
 
 isr_stub_\num:
     pushl $0
-    pushal
     pushl $\num
+    pushal
+    movl %esp, %eax
+    pushl %eax
     call common_handler
+    addl $4, %esp
     popal
+    addl $8, %esp
     iret
 .endm
 
