@@ -1,7 +1,9 @@
 #ifndef __HANDLER_FUNCTIONS__
 #define __HANDLER_FUNCTIONS__
 
-void divide_by_zero(void);
-void keyboard_handler();
+#include "interrupts/common_handler.h"
+
+void divide_by_zero(registers_t* r);
+void keyboard_handler(registers_t* r);
 
 #endif

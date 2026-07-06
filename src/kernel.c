@@ -10,7 +10,7 @@ void kernel_main(void)
     PIC_remap(0x20,0x28);
     terminal_initialize();
     
-    __asm__ volatile("sti");
+    // __asm__ volatile("sti");
     for (;;)
     {
         __asm__ volatile("hlt");

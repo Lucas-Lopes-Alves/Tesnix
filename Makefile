@@ -1,7 +1,7 @@
 PLACE?="build/isos/kernel.iso"
 CC=i686-elf-gcc
 AS = i686-elf-as
-CFLAGS= -ffreestanding -Iinclude -O2 -Wall -Wextra -fno-stack-protector -fno-builtin -fno-pic -fno-pie
+CFLAGS= -ffreestanding -Iinclude -O3 -Wall -Wextra -fno-stack-protector -fno-builtin -fno-pic -fno-pie
 LDFLAGS= -ffreestanding -nostdlib -lgcc
 
 QEMUFLAGS?=

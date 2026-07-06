@@ -33,6 +33,7 @@ void idt_set_descriptor(uint8_t vector, void* isr, uint8_t flags){
 }
 
 extern void* isr_stub_table[];
+extern void* irq_stub_table[];
 
 void idt_init() {
     idtr.base = (uintptr_t)&idt[0];
@@ -42,10 +43,10 @@ void idt_init() {
         idt_set_descriptor(vector, isr_stub_table[vector], 0x8E);
     }
 
-    idt_load(&idtr);
-}
+    for (uint8_t irq = 0; irq < 16; irq++)
+    {
+        idt_set_descriptor(irq+32, irq_stub_table[irq], 0x8E);
+    }
 
-void idt_install_irq()
-{
-    
+    idt_load(&idtr);
 }
