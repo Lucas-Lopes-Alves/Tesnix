@@ -4,8 +4,8 @@
 #include <stdint.h>
 #include <stddef.h>
 typedef struct registers{
-    uint32_t int_no;
     uint32_t edi, esi, ebp, esp, ebx, edx, ecx, eax;
+    uint32_t int_no;
     uint32_t err_code;
 }registers_t;
 

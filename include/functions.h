@@ -7,4 +7,5 @@
 
 size_t kstrlen(const char *str);
 size_t kstrcmp(const char* str1, const char* str2);
+void toStr(size_t v,char* buffer);
 #endif

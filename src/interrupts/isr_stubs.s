@@ -1,4 +1,3 @@
-.extern common_handler
 .macro isr_with_err_stub num
 .global isr_stub_\num
 

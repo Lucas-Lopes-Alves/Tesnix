@@ -1,10 +1,9 @@
-.extern common_handler
 .macro irq_stub num
 .global irq_stub_\num
 
 irq_stub_\num:
     pushl $0
-    pushl $\num
+    pushl $(32+\num)
     pushal
     movl %esp, %eax
     pushl %eax

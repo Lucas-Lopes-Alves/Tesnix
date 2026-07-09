@@ -11,3 +11,4 @@ build/obj
 *.json
 *.elf
 *.o
+.*

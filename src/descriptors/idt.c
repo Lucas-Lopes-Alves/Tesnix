@@ -2,8 +2,6 @@
 #include <stddef.h>
 #include "descriptors/idt.h"
 
-#define IDT_MAX_DESCRIPTORS 32
-
 typedef struct idt_ptr {
     uint16_t limit;
     uint32_t base;
@@ -29,7 +27,7 @@ void idt_set_descriptor(uint8_t vector, void* isr, uint8_t flags){
     descriptor->selector = 0x08;
     descriptor->attributes = flags;
     descriptor->isr_high = (uint32_t)isr>>16;
-    descriptor->reserved = 0; 
+    descriptor->reserved = 0;
 }
 
 extern void* isr_stub_table[];
@@ -37,7 +35,7 @@ extern void* irq_stub_table[];
 
 void idt_init() {
     idtr.base = (uintptr_t)&idt[0];
-    idtr.limit = (uint16_t)sizeof(idt_entry_t) * IDT_MAX_DESCRIPTORS - 1;
+    idtr.limit = (uint16_t)(sizeof(idt) - 1);
 
     for (uint8_t vector = 0; vector < 32; vector++) {
         idt_set_descriptor(vector, isr_stub_table[vector], 0x8E);

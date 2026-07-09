@@ -6,12 +6,14 @@
 
 void common_handler(registers_t *interrupt)
 {
-    size_t irq = interrupt->int_no;
-    if (handlers[irq] != NULL)
+    size_t int_no = interrupt->int_no;
+    if (handlers[int_no] != NULL)
     {
-        handlers[irq](interrupt);
+        handlers[int_no](interrupt);
     }
-
-    PIC_sendEOI(irq);
+    if (int_no >= 32 && int_no <=47)
+    {
+        PIC_sendEOI(int_no-32);
+    }
     return;
 }
