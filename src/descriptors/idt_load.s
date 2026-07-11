@@ -1,7 +1,6 @@
 .global idt_load
-.extern idtr
 
 idt_load:
-    # movl 4(%esp), %eax
-    lidt idtr
+    movl 4(%esp), %eax
+    lidt (%eax)
     ret

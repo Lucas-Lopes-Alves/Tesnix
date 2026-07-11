@@ -156,15 +156,7 @@ void echo()
 
 void test(void)
 {
-    asm volatile(
-        "movw $0x28, %%ax\n\t"
-        "movw %%ax, %%ds\n\t"
-        "movw %%ax, %%es\n\t"
-        "movw %%ax, %%fs\n\t"
-        "movw %%ax, %%gs"
-        :
-        :
-        : "ax");
+    asm volatile("ud2");
 }
 
 void update_cursor(size_t y, size_t x)

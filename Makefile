@@ -1,7 +1,7 @@
 PLACE?="build/isos/kernel.iso"
 CC=i686-elf-gcc
 AS = i686-elf-as
-CFLAGS= -ffreestanding -Iinclude -O3 -Wall -Wextra -fno-stack-protector -fno-builtin -fno-pic -fno-pie
+CFLAGS= -ffreestanding -Iinclude -O4 -Wall -Wextra -fno-stack-protector -fno-builtin -fno-pic -fno-pie
 LDFLAGS= -ffreestanding -nostdlib -lgcc
 
 QEMUFLAGS?=
@@ -15,7 +15,7 @@ DOBJS := $(patsubst src/%.c, build/debugBin/D%.o, $(SRCS_C))
 DOBJS += $(patsubst src/%.s, build/debugBin/D%.o, $(SRCS_S))
 
 # Checks if the folders exists to create them if not exists and don't create if it exists
-$(shell mkdir -p build/bin build/debug/iso/boot/grub build/debugBin build/iso/boot/grub build/isos build/obj)
+$(shell mkdir -p build/bin build/debug/boot/grub build/debugBin build/iso/boot/grub build/isos build/obj)
 
 .PHONY: debug clean all build emulate iso
 
@@ -52,9 +52,9 @@ build/obj/%.o: src/%.s
 #Debug section
 debug: $(DOBJS)
 	@echo "Linking the debug object files"
-	@$(CC) $(LDFLAGS) -T kernel.ld $(DOBJS) -o build/debug/iso/boot/Dkernel.elf
+	@$(CC) $(LDFLAGS) -T kernel.ld $(DOBJS) -o build/debug/boot/Dkernel.elf
 	@echo "Creating the iso at isos/"
-	@grub-mkrescue build/debug/iso -o build/isos/debug.iso > /dev/null 2>&1
+	@grub-mkrescue build/debug/ -o build/isos/debug.iso > /dev/null 2>&1
 	@echo "Iso created"
 
 build/debugBin/D%.o: src/%.c
@@ -74,4 +74,4 @@ run:
 	@qemu-system-i386 -cdrom $(PLACE) $(QEMUFLAGS)
 
 clean:
-	@rm -rf build/bin/* build/debug/iso/boot/Dkernel.elf build/debugBin/* build/iso/boot/kernel.elf build/isos/* build/obj/*
+	@rm -rf build/bin/* build/debug/boot/Dkernel.elf build/debugBin/* build/iso/boot/kernel.elf build/isos/* build/obj/*

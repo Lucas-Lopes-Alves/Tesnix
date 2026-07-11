@@ -57,7 +57,7 @@ void keyboard_handler(registers_t* r)
         {
             return;
         }
-        vga_writestring(str);
+        vga_putchar((char)str[0]);
     }
     return;
 }
@@ -65,6 +65,6 @@ void keyboard_handler(registers_t* r)
 void generic_handler(registers_t* r)
 {
     (void)r;
-    vga_writestring("generic message\n");
+    vga_writestring("generic message");
     return;
 }
