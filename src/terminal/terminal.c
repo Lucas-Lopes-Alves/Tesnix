@@ -52,6 +52,7 @@ size_t initial_column = 0;
 size_t initial_row = 0;
 char line[2000] = {0};
 char command[100] = {0};
+size_t line_pos = 0;
 
 // The terminal_buffer set as volatile to prevent otimizations
 // that can ignore the acess to the memory
@@ -98,6 +99,7 @@ void clear()
 
     terminal_column = 0;
     terminal_row = 0;
+    line_pos = 0;
     prompt();
     update_cursor(terminal_row, terminal_column);
 }
@@ -156,7 +158,10 @@ void echo()
 
 void test(void)
 {
-    asm volatile("ud2");
+    asm volatile("mov $0, %eax");
+    asm volatile("xor %edx, %edx");
+    asm volatile("mov $0, %ecx");
+    asm volatile("div %ecx");
 }
 
 void update_cursor(size_t y, size_t x)
@@ -190,6 +195,11 @@ void terminal_scroll()
         VGA_BUFFER[24][k] = vga_entry(' ', terminal_color);
     }
     terminal_row = VGA_HEIGHT - 1;
+    if (initial_row == 0)
+    {
+        return;
+    } 
+    
     initial_row -= 1;
 }
 
@@ -233,6 +243,7 @@ void vga_putchar(char c)
         {
             terminal_scroll();
         }
+        line_pos = 0;
         return;
     }
     if (c == '\b')
@@ -251,6 +262,11 @@ void vga_putchar(char c)
             terminal_column = terminal_column - 1;
         }
         VGA_BUFFER[terminal_row][terminal_column] = vga_entry(' ', terminal_color);
+        if (line_pos == 0)
+        {
+            return;
+        }
+        line_pos -= 1;
         return;
     }
     if (c == '\t')
@@ -263,6 +279,8 @@ void vga_putchar(char c)
     }
     VGA_BUFFER[terminal_row][terminal_column] = vga_entry(c, terminal_color);
     terminal_column++;
+    line[line_pos] = vga_entry(c, terminal_color);
+    line_pos++;
     if (terminal_column == VGA_WIDTH)
     {
         terminal_row++;
@@ -294,22 +312,13 @@ void vga_writestring(const char *string)
 void detect_command()
 {
     size_t count = 0;
-    size_t initial_index = (initial_row * VGA_WIDTH) + initial_column;
-    size_t actual_index = (terminal_row * VGA_WIDTH) + terminal_column;
-    count = initial_index;
-    size_t temp = 0;
-    while ((char)terminal_buffer[count] != ' ')
+    size_t temp = initial_column;
+    while (count < sizeof(line) - 1 && line[count] != ' ' && line[count] != '\0')
     {
-        command[temp] = (char)terminal_buffer[count];
-        count++;
-        temp++;
+        command[count++] = line[temp++];
+        // count++;
+        // temp++;
     }
-    temp++;
-    command[temp] = '\0';
-    count = 0;
-    for (size_t i = initial_index; i < actual_index; i++, count++)
-    {
-        line[count] = (char)terminal_buffer[i];
-    }
-    line[count] = '\0';
+    count++;
+    command[count] = '\0';
 }

@@ -46,18 +46,19 @@ void double_fault_handler(registers_t *r)
     }
 }
 
+//IRQ 1
 void keyboard_handler(registers_t* r)
 {
     (void)r;
     if (inb(0x64) & 0x01)
     {
         uint8_t code = inb(0x60);
-        char str[2] = {keyboard_char(code), '\0'};
-        if (str[0] == '\0')
+        char str = keyboard_char(code);
+        if (str == '\0')
         {
             return;
         }
-        vga_putchar((char)str[0]);
+        vga_putchar(str);
     }
     return;
 }
