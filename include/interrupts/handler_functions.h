@@ -5,6 +5,8 @@
 
 void divide_by_zero(registers_t *r);
 
+void non_maskable_interrupt_handler(registers_t *r);
+
 void debug_handler(registers_t *r);
 
 void double_fault_handler(registers_t *r);

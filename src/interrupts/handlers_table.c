@@ -7,7 +7,7 @@
 void (*handlers[256])(registers_t*) = {
     [0] = divide_by_zero,
     [1] = generic_handler,
-    [2] = generic_handler,
+    [2] = non_maskable_interrupt_handler,
     [3] = generic_handler,
     [4] = generic_handler,
     [5] = generic_handler,
@@ -37,5 +37,5 @@ void (*handlers[256])(registers_t*) = {
     [29] = generic_handler,
     [30] = generic_handler,
     [31] = generic_handler,
-    [32] = keyboard_handler
+    [33] = keyboard_handler
 };

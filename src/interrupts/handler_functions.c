@@ -11,8 +11,18 @@
 void divide_by_zero(registers_t* r)
 {
     (void)r;
-    vga_writestring("ERROR,Division by zero!\n");
-    return;
+    const char characteres[] ="ERROR,Division by zero!";
+    size_t count = 0;
+    clear(false);
+    while (characteres[count])
+    {
+        vga_putchar(characteres[count]);
+        count++;
+    }
+    while (1) {
+        __asm__ volatile("cli");
+        __asm__ volatile("hlt");
+    }
 }
 
 // Isr 1
@@ -27,6 +37,19 @@ void debug_handler(registers_t* r)
 void non_maskable_interrupt_handler(registers_t *r)
 {
     (void)r;
+    clear(false);
+    const char characters[] = "\nHardware failure detected!";
+    size_t count = 0;
+    while (characters[count])
+    {
+        vga_putchar(characters[count++]);
+    }
+
+    while (1)
+    {
+        __asm__ volatile("cli");
+        __asm__ volatile("hlt");
+    }
 }
 
 //Isr 8
@@ -66,6 +89,12 @@ void keyboard_handler(registers_t* r)
 void generic_handler(registers_t* r)
 {
     (void)r;
-    vga_writestring("generic message");
+    const char characteres[] ="generic message!";
+    size_t count = 0;
+    while (characteres[count])
+    {
+        vga_putchar(characteres[count]);
+        count++;
+    }
     return;
 }

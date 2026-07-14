@@ -22,7 +22,7 @@ enum vga_color
     VGA_COLOR_LIGHT_CYAN = 11,
     VGA_COLOR_LIGHT_RED = 12,
     VGA_COLOR_LIGHT_MAGENTA = 13,
-    VGA_COLOR_LIGHT_BROWN = 14,
+    VGA_COLOR_YELLOW = 14,
     VGA_COLOR_WHITE = 15,
 };
 
@@ -87,7 +87,7 @@ void terminal_initialize(void)
     prompt();
 }
 
-void clear()
+void clear(bool isPrompt)
 {
     for (size_t i = 0; i < VGA_HEIGHT; i++)
     {
@@ -99,8 +99,12 @@ void clear()
 
     terminal_column = 0;
     terminal_row = 0;
-    line_pos = 0;
-    prompt();
+    clean_line();
+    clean_command();
+    if (isPrompt)
+    {
+        prompt();
+    }
     update_cursor(terminal_row, terminal_column);
 }
 
@@ -114,21 +118,29 @@ void echo()
 {
     // go to the start of the next line
     terminal_row += 1;
+    if (terminal_row >= VGA_HEIGHT)
+    {
+        terminal_scroll();
+    }
     terminal_column = 0;
-    size_t character = 0;
+    size_t character = initial_column;
 
     // add to the index to ignore the word echo
-    while (line[character] != ' ')
+    while (character < sizeof(line)/sizeof(line[0]) && line[character] != ' ' && line[character] != '\0')
     {
         character++;
     }
-    character++; // increment to ignore the first space
+    // increment to ignore the first space
+    if(line[character] == ' ')
+    {
+        character++;
+    }
 
     // print text in the vga buffer while the character is diferent from '\0'
     while (line[character])
     {
         // checks if it's in the last line of the buffer
-        if (terminal_row > VGA_HEIGHT)
+        if (terminal_row >= VGA_HEIGHT)
         {
             terminal_scroll();
         }
@@ -138,7 +150,7 @@ void echo()
         terminal_column++;
 
         // if it reaches the horizontal limit of the buffer, it goes start of the next line
-        if (terminal_column > VGA_WIDTH)
+        if (terminal_column >= VGA_WIDTH)
         {
             terminal_row++;
             terminal_column = 0;
@@ -149,6 +161,8 @@ void echo()
     // configure the enviroment to the next command
     terminal_row += 1;
     terminal_column = 0;
+    clean_line();
+    clean_command();
     prompt(); // print the command indicator (tesnix> )
 
     // update the cursor to the actual position of the
@@ -203,6 +217,23 @@ void terminal_scroll()
     initial_row -= 1;
 }
 
+void clean_line(void)
+{
+    for (size_t i = 0; i < sizeof(line)/sizeof(line[0]); i++)
+    {
+        line[i] = '\0';
+    }
+    line_pos = 0;
+}
+
+void clean_command(void)
+{
+    for (size_t i = 0;i < sizeof(command)/sizeof(command[0]); i++)
+    {
+        command[i] = '\0';
+    }
+}
+
 /*
  *  Writes a single character to the vga buffer
  *
@@ -222,7 +253,7 @@ void vga_putchar(char c)
         detect_command();
         if (kstrcmp(command, "clear") == 0)
         {
-            clear();
+            clear(true);
             return;
         }
         if (kstrcmp(command, "echo") == 0)
@@ -237,13 +268,14 @@ void vga_putchar(char c)
         }
         terminal_row++;
         terminal_column = 0;
-        prompt();
-
         if (terminal_row == VGA_HEIGHT)
         {
             terminal_scroll();
         }
-        line_pos = 0;
+        clean_line();
+        clean_command();
+        prompt();
+
         return;
     }
     if (c == '\b')
@@ -266,7 +298,8 @@ void vga_putchar(char c)
         {
             return;
         }
-        line_pos -= 1;
+        line_pos--;
+        line[line_pos] = '\0';
         return;
     }
     if (c == '\t')
@@ -279,8 +312,11 @@ void vga_putchar(char c)
     }
     VGA_BUFFER[terminal_row][terminal_column] = vga_entry(c, terminal_color);
     terminal_column++;
-    line[line_pos] = vga_entry(c, terminal_color);
-    line_pos++;
+    if (line_pos < sizeof(line)/sizeof(line[0]) - 1)
+    {
+        line[line_pos++] = c;
+        line[line_pos] = '\0';
+    }
     if (terminal_column == VGA_WIDTH)
     {
         terminal_row++;
@@ -313,12 +349,11 @@ void detect_command()
 {
     size_t count = 0;
     size_t temp = initial_column;
-    while (count < sizeof(line) - 1 && line[count] != ' ' && line[count] != '\0')
+    while (count < sizeof(command) - 1 && temp < sizeof(line) && line[temp] != ' ' && line[temp] != '\0')
     {
         command[count++] = line[temp++];
         // count++;
         // temp++;
     }
-    count++;
     command[count] = '\0';
 }
