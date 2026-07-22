@@ -4,6 +4,7 @@
 #include "terminal/terminal.h"
 #include "functions.h"
 #include "io.h"
+#include "interrupts/handler_functions.h"
 
 // list all the possible colors in vga mode
 enum vga_color
@@ -178,6 +179,14 @@ void test(void)
     asm volatile("div %ecx");
 }
 
+void print_timer(void)
+{
+    char info[10];
+    toStr(timer,info);
+    vga_writestring(info);
+    vga_writestring("\n");
+}
+
 void update_cursor(size_t y, size_t x)
 {
     uint16_t pos = y * VGA_WIDTH + x;
@@ -266,6 +275,15 @@ void vga_putchar(char c)
             test();
             return;
         }
+        if(kstrcmp(command, "timer") == 0)
+        {
+            clean_line();
+            clean_command();
+            vga_writestring("\n------------\n");
+            print_timer();
+            vga_writestring("------------\n");
+            return;
+        }
         terminal_row++;
         terminal_column = 0;
         if (terminal_row == VGA_HEIGHT)
@@ -300,6 +318,7 @@ void vga_putchar(char c)
         }
         line_pos--;
         line[line_pos] = '\0';
+        update_cursor(terminal_row, terminal_column);
         return;
     }
     if (c == '\t')
@@ -308,6 +327,7 @@ void vga_putchar(char c)
         {
             vga_putchar(' ');
         }
+        update_cursor(terminal_row, terminal_column);
         return;
     }
     VGA_BUFFER[terminal_row][terminal_column] = vga_entry(c, terminal_color);
@@ -322,6 +342,7 @@ void vga_putchar(char c)
         terminal_row++;
         terminal_column = 0;
     }
+    update_cursor(terminal_row, terminal_column);
 }
 
 // function that writes in the screen and go to the next line
