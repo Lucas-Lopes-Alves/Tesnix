@@ -1,8 +1,7 @@
-#include "io.h"
 #include <stdint.h>
 #include <stdbool.h>
+#include "io.h"
 #include "terminal/keymap.h"
-#include "terminal/terminal.h"
 
 static inline void ps2_write_wait()
 {
