@@ -2,10 +2,12 @@
 #include "descriptors/gdt.h"
 #include "descriptors/idt.h"
 #include "pic/pic.h"
+#include "memory/malloc.h"
 
 void kernel_main(void)
 {
     __asm__ volatile("cli");
+    heap_init();
     gdt_init();
     idt_init();
     PIC_remap(0x20,0x28);
