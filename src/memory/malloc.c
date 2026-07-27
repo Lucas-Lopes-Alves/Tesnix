@@ -27,15 +27,21 @@ void* kmalloc(size_t size)
     }
     header* ptr = (header *)heap_start;
 
+    bool found = false;
     while((uintptr_t)ptr < heap_end)
     {
-        if (((uintptr_t)ptr+sizeof(header) <= heap_end) && ptr->size >=size)
+        if (((uintptr_t)ptr+sizeof(header) < heap_end) && ptr->size >=size)
         {
+            found = true;
             break;
         }
         ptr = (header*)((uint8_t*)ptr+sizeof(header)+ptr->size);
     }
-
+    if (!found)
+    {
+        return NULL;
+    }
+    
     header *new = (header *)((uint8_t*)ptr + sizeof(header)+size);
     new->free = true;
     new->size = heap_end-((uintptr_t)new + sizeof(header));
